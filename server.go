@@ -8,15 +8,14 @@ import (
 )
 
 type HttpServer struct {
-	// gnet.BuiltinEventEngine
-	fasthttp.Server
+	*fasthttp.Server
 	gnet.Engine
-	addr      string
-	multicore bool
 }
 
-func NewHttpServer() *HttpServer {
-	return nil
+func NewHttpServer(srv *fasthttp.Server) *HttpServer {
+	return &HttpServer{
+		Server: srv,
+	}
 }
 
 func (wss *HttpServer) OnBoot(eng gnet.Engine) gnet.Action {
@@ -47,6 +46,6 @@ func (wss *HttpServer) OnShutdown(gnet.Engine) {
 	return
 }
 
-func (h *HttpServer) Run() error {
-	return gnet.Run(h, h.addr, gnet.WithMulticore(h.multicore), gnet.WithReusePort(true), gnet.WithTicker(true))
+func (h *HttpServer) Run(addr string, opts ...gnet.Option) error {
+	return gnet.Run(h, addr, opts...)
 }
